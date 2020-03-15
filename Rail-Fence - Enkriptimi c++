@@ -1,0 +1,85 @@
+#include <iostream>
+#include <regex>
+
+using namespace std;
+
+void enkriptimi(){
+    string mesazhi;
+    cout << "Jepe mesazhin qe deshironi ta enkriptoni: ";
+    getline(cin , mesazhi);
+    cin.ignore();
+
+    //largimi i hapsirave
+    mesazhi = regex_replace(mesazhi, regex("\\s+"), "");
+
+    cout << "Jepeni celsin : ";
+    int celesi;
+    cin >> celesi;
+    cin.ignore();
+
+    // krijimi i matrices se zbrazur
+    char Matricacelsit[celesi][mesazhi.length()];
+    for (int i = 0; i < celesi; i++){
+        for (int j = 0; j < mesazhi.length(); j++){
+            Matricacelsit[i][j] = '.';
+        }
+    }
+
+
+
+    // vendosja e shkronjave te mesazhit nje nga nje ne matric ne formen zig zag
+    int rreshti = 0;
+    int kontrolli = 0;
+    for (int i = 0; i < mesazhi.length(); i++){
+        if (kontrolli == 0){
+            Matricacelsit[rreshti][i] = mesazhi[i];
+            rreshti++;
+            if(rreshti == celesi){
+                kontrolli = 1;
+                rreshti--;
+            }
+        } else if (kontrolli == 1){
+            rreshti--;
+            Matricacelsit[rreshti][i] = mesazhi[i];
+            if (rreshti == 0){
+                kontrolli = 0;
+                rreshti = 1;
+            }
+        } 
+    } 
+
+    // Krijimi i tekstit te enkriptuar
+    string Tekstienkriptuar = "";
+    for (int i = 0; i < celesi; i++){
+        for (int j = 0; j < mesazhi.length(); j++){
+
+            Tekstienkriptuar += Matricacelsit[i][j];
+        }
+
+    }
+
+    // Largimi i  '.' nga Teksti i enkriptuar
+    Tekstienkriptuar = regex_replace(Tekstienkriptuar, regex("\\."), "");
+    cout << "Teksti i enkriptuar eshte: " << Tekstienkriptuar;
+}
+
+
+
+int main()
+{
+    cout << "Shtypni 1 per enkriptimin e tekstit :  ";
+    int zgjedhja;
+    cin >> zgjedhja;
+    cin.ignore();
+
+    if (zgjedhja == 1){
+        cout << "\n Enkriptimi" << endl;
+        enkriptimi();
+
+    } 
+     else {
+        cout << "\n zgjedhja juaj eshte gabim! " << endl;
+    }
+
+    return 0;
+}
