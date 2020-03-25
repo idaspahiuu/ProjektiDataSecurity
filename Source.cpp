@@ -2,10 +2,23 @@
 #include <string>
 
 using namespace std;
+class Vigenere
+{
+public:
+    string mesazhi;
+    string celesi;
+    int tabela[26][26];
 
-string mesazhi, celesi;
+    void caps();
+    void krijimiTabeles();
+    void enkriptimi(string mesazhi, string celesi);
+    int numerimi(int cel, int msg);
+    void dekriptimi(string mesazhi, string celesi);
+};
+
+
 //funksioni per kthimin e tekstit dhe celesit ne shkronja te medha si dhe pershatja e celesit me tekstin(per nga madhesia)
-void caps() {
+void Vigenere::caps() {
     string msg;
     cout << "Shkruani tekstin qe doni te enkriptoni/dekriptoni: ";
     getline(cin, msg);
@@ -49,8 +62,8 @@ void caps() {
     celesi = cel1;
 }
 
-int tabela[26][26];
-void krijimiTabeles() {
+
+void Vigenere::krijimiTabeles() {
     for (int i = 0; i < 26; i++) {
         for (int j = 0; j < 26; j++) {
             int n;
@@ -72,7 +85,7 @@ void krijimiTabeles() {
 
 }
 //Krijimi i funksionit per enkriptim
-void enkriptimi(string mesazhi, string celesi) {
+void Vigenere::enkriptimi(string mesazhi, string celesi) {
     krijimiTabeles();
     string ciphertxt = "";
     for (int i = 0; i < mesazhi.length(); i++) {
@@ -91,7 +104,7 @@ void enkriptimi(string mesazhi, string celesi) {
 
 
 //fillojme numerimin nga ASCII kodi per shkronjen e celesit dhe mbarojme tek shkronja e fundit e mesazhit
-int numerimi(int cel, int msg) {
+int Vigenere::numerimi(int cel, int msg) {
     int k = 0;
     string rez = "";
 
@@ -117,7 +130,7 @@ int numerimi(int cel, int msg) {
 }
 
 //Krijimi i funksionit per dekriptim
-void dekriptimi(string mesazhi, string celesi) {
+void Vigenere::dekriptimi(string mesazhi, string celesi) {
     string plaintxt = "";
     for (int i = 0; i < mesazhi.length(); i++) {
         if (mesazhi[i] == 32 && celesi[i] == 32) {
@@ -134,31 +147,7 @@ void dekriptimi(string mesazhi, string celesi) {
 
 int main()
 {
-    cout << "Verejte!" << endl;
-    cout << "Mesazhi dhe teksti duhet patjeter te jene me permbajtje alfabetike, nuk pranohen numra dhe karaktere te tjera!";
-    char zgj;
-    cout << "\n\nShtypni 'e' per Enkriptim.";
-    cout << "\nShtypni 'd' per Dekriptim.";
-    cout << "\nShkruani zgjedhjen tuaj ketu : ";
-    cin >> zgj;
-    cin.ignore();
-
-    switch (zgj)
-    {
-    case 'e':
-        cout << "Enkriptimi: " << endl;
-        caps();
-        enkriptimi(mesazhi, celesi);
-        break;
-    case 'd':
-        cout << "Dekriptimi: " << endl;
-        caps();
-        dekriptimi(mesazhi, celesi);
-        break;
-    default:
-        cout << "Zgjedhja e padefinuar!" << endl;
-        break;
-    }
+  
 
     return 0;
 }
