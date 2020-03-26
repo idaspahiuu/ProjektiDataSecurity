@@ -19,25 +19,30 @@ public:
 
 //funksioni per kthimin e tekstit dhe celesit ne shkronja te medha si dhe pershatja e celesit me tekstin(per nga madhesia)
 void Vigenere::caps() {
-    string msg;
-    cout << "Shkruani tekstin qe doni te enkriptoni/dekriptoni: ";
-    getline(cin, msg);
-    cin.ignore();
-
-    for (int i = 0; i < msg.length(); i++) {
-        msg[i] = toupper(msg[i]);
-    }
 
     string cel;
-    cout << "Shkruani celesin per enkriptim/dekriptim: ";
     getline(cin, cel);
     cin.ignore();
-
+    cout << " ";
 
     for (int i = 0; i < cel.length(); i++) {
         cel[i] = toupper(cel[i]);
     }
 
+
+
+    string msg;
+    cout << " \" ";
+    getline(cin, msg);
+    cin.ignore();
+    cout << " \" ";
+   
+
+    for (int i = 0; i < msg.length(); i++) {
+        msg[i] = toupper(msg[i]);
+    }
+
+   
 
     string cel1 = "";
     for (int i = 0, j = 0; i < msg.length(); i++) {
