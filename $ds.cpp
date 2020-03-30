@@ -1,7 +1,68 @@
-#include <iostream>   
-#include <string>     
+#include <iostream>   //console io
+#include <string>     //string handling
+
 using namespace std;
-//implementimi i klases Vigenere
+
+class Caesar {
+public:
+    string encode(string message, int key) {
+        for (int i = 0; i < message.length(); i++)
+
+        {
+            if (isalpha(message[i]))
+            {
+                if (isupper(message[i]))
+                {
+                    char c = message[i];
+                    cout << (char)((c - 'A' + key) % 26 + 'A');
+                }
+
+                if (islower(message[i]))
+                {
+                    char c = message[i];
+                    cout << char((c - 'a' + key) % 26 + 'a');
+                }
+            }
+
+            else
+            {
+                cout << message[i];
+            }
+
+        }
+        return "";
+
+    }
+    string decode(string message, int key) {
+
+        for (int i = 0; i < message.length(); i++)
+
+        {
+            if (isalpha(message[i]))
+            {
+                if (isupper(message[i]))
+                {
+                    char c = message[i];
+                    cout << (char)((c - 'A' - key) % 26 + 'A');
+                }
+
+                if (islower(message[i]))
+                {
+                    char c = message[i];
+                    cout << char((c - 'a' - key) % 26 + 'a');
+                }
+            }
+
+            else
+            {
+                cout << message[i];
+            }
+        }
+
+        return "";
+    }
+};
+
 class Vigenere
 {
 public:
@@ -18,7 +79,7 @@ public:
         }
     }
 
-    string encrypt(string text)//funksioni per enkriptim
+    string encrypt(string text)
     {
         string out;
 
@@ -38,7 +99,7 @@ public:
         return out;
     }
 
-    string decrypt(string text)//funksioni per dekriptim
+    string decrypt(string text)
     {
         string out;
 
@@ -61,19 +122,35 @@ public:
 
 int main(int argc, char* argv[])
 {
-    //thirrja permes argumenteve
-    string key = argv[2];
+    Caesar c;
+    string key = argv[3];
     Vigenere cipher(key);
 
-    if (strcmp(argv[1], "encrypt") == 0) {
-        string original = argv[3];
-        string encrypted = cipher.encrypt(original);
-        cout << "Encrypted: " << encrypted << endl;
+    if (strcmp(argv[1], "vigenere") == 0) {
+        if (strcmp(argv[2], "encrypt") == 0) {
+            string original = argv[4];
+            string encrypted = cipher.encrypt(original);
+            cout << encrypted << endl;
+        }
+        else if (strcmp(argv[2], "decrypt") == 0) {
+            string original = argv[4];
+            string decrypted = cipher.decrypt(original);
+            cout << decrypted << endl;
+        }
     }
+    if (strcmp(argv[1], "caesar") == 0) {
+        if (strcmp(argv[2], "encode") == 0) {
+            string message = argv[3];
+            int key = atoi(argv[4]);
+            string encoded = c.encode(message, key);
+            cout << encoded << endl;
+        }
+        else if (strcmp(argv[2], "decode") == 0) {
+            string message = argv[3];
+            int key = atoi(argv[4]);
+            string decoded = c.decode(message, key);
+            cout << decoded << endl;
 
-    else if (strcmp(argv[1], "decrypt") == 0) {
-        string original = argv[2];
-        string decrypted = cipher.decrypt(original);
-        cout << "Decrypted: " << decrypted << endl;
+        }
     }
 }
