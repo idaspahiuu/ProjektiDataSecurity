@@ -8,3 +8,23 @@ te dhena ne kerkesat e projektit.
 hapsirat e mbetura do te mbushen me ndonje shkronje te cfardoshme.
  File-i perfundimtar eshte $ds.cpp, ndersa file-at tjere jane puna e kolegeve veq e veq per shkak qe te mos kishim ngaterresa.
 Kodi eshte shkruar vazhdimisht por per shkak te perdorimit te argumenteve na eshte dashur qe ne moment te fundit ta nderrojme kodin.
+
+Udhezimi mbi ekzekutimin dhe foto nga ekzekutimi i komandave me shembuj:
+
+![Ekzekutimi](https://user-images.githubusercontent.com/58752918/77952313-be9b5580-72cb-11ea-9e23-108bbfbf692e.png)
+
+1.Cezar-Enkriptimi
+![CezarE](https://user-images.githubusercontent.com/58752918/77952488-08843b80-72cc-11ea-8d4f-154656d5055c.png)
+Cezar-Dekriptimi
+![CezarD](https://user-images.githubusercontent.com/58752918/77952490-091cd200-72cc-11ea-88c6-20a68e371e85.png)
+
+2.Vigenere-Enkriptimi
+![VigenereE](https://user-images.githubusercontent.com/58752918/77952515-146ffd80-72cc-11ea-8459-484e548ccd64.png)
+Vigenere-Dekriptimi
+![VigenereD](https://user-images.githubusercontent.com/58752918/77952516-15089400-72cc-11ea-9496-ed712fecb056.png)
+
+3.Rail-Fence Enkriptimi
+![RailFenceD](https://user-images.githubusercontent.com/58752918/77952530-1c2fa200-72cc-11ea-84be-a9784aa2cf14.png)
+Rail-Fence Dekriptimi
+![RailFenceE](https://user-images.githubusercontent.com/58752918/77952532-1cc83880-72cc-11ea-9b69-aa311e2225d0.png)
+
