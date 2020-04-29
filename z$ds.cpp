@@ -73,52 +73,75 @@ public:
         for (int i = 0; i < key.size(); ++i)
         {
             if (key[i] >= 'A' && key[i] <= 'Z')
+            {
                 this->key += key[i];
-            else if (key[i] >= 'a' && key[i] <= 'z')
+            else if (key[i] == 32)
+                this->key += key[i];
+            else (key[i] >= 'a' && key[i] <= 'z')
                 this->key += key[i] + 'A' - 'a';
+            }
         }
-    }
 
-    string encrypt(string text)
-    {
-        string out;
-
-        for (int i = 0, j = 0; i < text.length(); ++i)
+        string encrypt(string text)
         {
-            char c = text[i];
+            string out;
 
-            if (c >= 'a' && c <= 'z')
-                c += 'A' - 'a';
-            else if (c < 'A' || c > 'Z')
-                continue;
+            for (int i = 0, j = 0; i < text.length(); ++i)
+            {
+                if (isalpha(text[i]))
+                {
+                    char c = text[i];
 
-            out += (c + key[j] - 2 * 'A') % 26 + 'A';
-            j = (j + 1) % key.length();
-        }
+                    if (c >= 'a' && c <= 'z')
+                        c += 'A' - 'a';
+                    else if (c < 'A' || c > 'Z')
+                        continue;
 
-        return out;
-    }
+                    out += (c + key[j] - 2 * 'A') % 26 + 'A';
+                    j = (j + 1) % key.length();
+                }
 
-    string decrypt(string text)
+                return out;
+            }
+    else
     {
-        string out;
-
-        for (int i = 0, j = 0; i < text.length(); ++i)
-        {
-            char c = text[i];
-
-            if (c >= 'a' && c <= 'z')
-                c += 'A' - 'a';
-            else if (c < 'A' || c > 'Z')
-                continue;
-
-            out += (c - key[j] + 26) % 26 + 'A';
-            j = (j + 1) % key.length();
+    return text[i];
+    }
         }
 
-        return out;
-    }
-};
+        string decrypt(string text)
+        {
+            string out;
+
+            for (int i = 0, j = 0; i < text.length(); ++i)
+            {
+                if (isalpha(text[i]))
+                {
+                    char c = text[i];
+
+                    if (c >= 'a' && c <= 'z')
+                        c += 'A' - 'a';
+                    else if (c < 'A' || c > 'Z')
+                        continue;
+
+
+                    out += (c - key[j] + 26) % 26 + 'A';
+                    j = (j + 1) % key.length();
+
+
+
+                    return out;
+                }
+                else
+                {
+                    return text[i];
+                }
+            }
+
+
+
+        }
+    };
 
 class Rail {
 public:
@@ -288,8 +311,8 @@ int main(int argc, char* argv[])
     }
     if (strcmp(argv[1], "caesar") == 0) {
         if (strcmp(argv[2], "encrypt") == 0) {
-            string message = argv[3];
-            int key = atoi(argv[4]);
+            string message = argv[4];
+            int key = atoi(argv[3]);
             string encoded = c.encode(message, key);
             cout << encoded << endl;
         }
@@ -303,16 +326,16 @@ int main(int argc, char* argv[])
     }
     if (strcmp(argv[1], "rail-fence") == 0) {
         if (strcmp(argv[2], "encrypt") == 0) {
-            string mesazhi = argv[3];
-            int kolona = atoi(argv[4]);
+            string mesazhi = argv[4];
+            int kolona = atoi(argv[3]);
             string encrypt = r.enkriptimi(mesazhi, kolona);
             r.show1(mesazhi, kolona);
             cout << encrypt << endl;
 
         }
         else if (strcmp(argv[2], "decrypt") == 0) {
-            string mesazhi = argv[3];
-            int kolona = atoi(argv[4]);
+            string mesazhi = argv[4];
+            int kolona = atoi(argv[3]);
             string decrypt = r.dekriptimi(mesazhi, kolona);
             r.show(mesazhi, kolona);
             cout << decrypt << endl;
