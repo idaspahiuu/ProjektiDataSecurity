@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
+using System.Net;
 
 
 namespace _ds
@@ -70,18 +71,26 @@ namespace _ds
             }
             else if (args[0].Equals("create-user"))
             {
-                String s = args[1];
-                string path = s + ".xml";
-                var keyGenerator = new RSACryptoKeyGenerator();
-                var keys = keyGenerator.generateKeys(1024);
-                RSA.create(s, keys.PublicKeys, keys.PrivateKeys);
-                Console.WriteLine("Eshte krijuar celesi privat " + s + ".xml");
-                Console.WriteLine("Eshte krijuar celesi privat " + s + ".pub.xml");
-                if (File.Exists(path))
-                {
-                    Console.WriteLine("Gabim: Celesi " + s + "eshte krijuar paraprakisht.");
-                }
+                Regex regex1 = new Regex(@"^[a-zA-Z0-9_]+$");
 
+                String s = args[1];
+                if (regex1.IsMatch(s))
+                {
+                    string path = s + ".xml";
+                    var keyGenerator = new RSACryptoKeyGenerator();
+                    var keys = keyGenerator.generateKeys(1024);
+                    RSA.create(s, keys.PublicKeys, keys.PrivateKeys);
+                    Console.WriteLine("Eshte krijuar celesi privat " + s + ".xml");
+                    Console.WriteLine("Eshte krijuar celesi privat " + s + ".pub.xml");
+                    if (File.Exists(path))
+                    {
+                        Console.WriteLine("Gabim: Celesi " + s + "eshte krijuar paraprakisht.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Gabim: Emrat duhet te përmbajne vetem simbolet A-Z, a-z, 0-9, dhe \"_\" !");
+                }
             }
             else if (args[0].Equals("delete-user"))
             {
@@ -102,90 +111,167 @@ namespace _ds
                     Console.WriteLine("Gabim: Celesi " + s + " nuk ekziston!");
                 }
             }
-            else if (args[0].Equals("export-key"))//komanda export-key
+
+           
+            
+            else  if (args[0].Equals("export-key"))//komanda export-key
+                {
+                    if (args[1].Equals("public"))
+                    {
+                    if (args.Length == 3)
+                    {
+                        string user = args[2];
+                        string path = "keys\\" + user + ".pub.xml";
+                        if (!File.Exists(path))
+                        {
+                            Console.WriteLine("Gabim: Celesi publik " + path + " nuk ekziston!");
+                        }
+                        else
+                        {
+                            RSA.ex(path);
+                        }
+                    }
+                    else
+                    {
+                        string user = args[2];
+                        string path = "keys\\" + user + ".pub.xml";
+                        string path1 = args[3];
+                        if (!File.Exists(path))
+                        {
+                            Console.WriteLine("Gabim: Celesi publik " + path + " nuk ekziston!");
+                        }
+                        else
+                        {
+                            RSA.exf(path,path1);
+                            Console.WriteLine("Celesi publik u ruajt ne fajllin " + args[3] + " ne folderin keys.");
+                        }
+                    }
+
+
+
+                    }
+                    else if (args[1].Equals("private"))
+                    {
+                    if (args.Length == 3)
+                    {
+                        string user = args[2];
+                        string path = "keys\\" + user + ".xml";
+                        if (!File.Exists(path))
+                        {
+                            Console.WriteLine("Gabim: Celesi publik " + path + " nuk ekziston!");
+                        }
+                        else
+                        {
+                            RSA.ex(path);
+                        }
+                    }
+                    else
+                    {
+                        string user = args[2];
+                        string path = "keys\\" + user + ".xml";
+                        string path1 = args[3];
+                        if (!File.Exists(path))
+                        {
+                            Console.WriteLine("Gabim: Celesi publik " + path + " nuk ekziston!");
+                        }
+                        else
+                        {
+                            RSA.exf(path, path1);
+                            Console.WriteLine("Celesi privat u ruajt ne fajllin " + args[3] + " ne folderin keys.");
+                        }
+                    }
+
+                }
+
+                }
+            
+
+            else if (args[0].Equals("import-key"))//komanda import-key
             {
-                if (args[1].Equals("public"))//nese argumenti 3 eshte public kthen celesin public
+                RSACryptoServiceProvider objRSA = new RSACryptoServiceProvider();
+                string user = args[1];
+                string path1 = "keys\\" + user + ".xml";
+                string path2 = "keys\\" + user + ".pub.xml";
+                string path = args[2];
+
+                //kontrollo nese fajlli nga i cili do te importojme celsin eshte xml file
+                if (path.Contains(".xml"))
                 {
-                    string user = args[2];
-                    string pubkey = "keys\\"+ user + ".pub.xml";
-                    if (args[3].Equals(null))
+                    string xmlString = System.IO.File.ReadAllText(path);
+                    //kontrollo permbajtjen
+                    if (xmlString.Contains("<P>"))
                     {
-                        if (!File.Exists(pubkey))//nese nuk ekziston fajlli me userin e caktuar e krijon dhe pastaj e ktthen celesin publik
-                        {
-                            var keyGenerator = new RSACryptoKeyGenerator();
-                            var keys = keyGenerator.generateKeys(1024);
-                            RSA.create(user, keys.PublicKeys, keys.PrivateKeys);
-                            RSA.ex(pubkey);
+                        File.WriteAllText(path1, xmlString);
+                        //gjenerimi i celsit publik pasi qe celsi qe importohet eshte privat
+                        string strXmlParameters = objRSA.ToXmlString(true);
+                        StreamWriter sw = new StreamWriter(path2);
+                        sw.Write(strXmlParameters);
+                        sw.Close();
+                        Console.WriteLine("Celesi privat u ruajt ne fajllin " + path1);
+                        Console.WriteLine("Celesi publik u ruajt ne fajllin " + path2);
 
-                        }
-                        else
-                        {
-                            RSA.ex(pubkey);
 
-                        }
                     }
+                    //nese ekziston useri paraprakisht
+                    else if (File.Exists(path1) || File.Exists(path2))
+                    {
+                        Console.WriteLine("Gabim: Celesi " + user + " ekziston paraprakisht.");
+                    }
+                    //ruajtja e celsit publik
                     else
                     {
-                        if (!File.Exists(pubkey))//nese nuk ekziston fajlli me userin e caktuar e krijon dhe pastaj e ktthen celesin publik
-                        {
-                            var keyGenerator = new RSACryptoKeyGenerator();
-                            var keys = keyGenerator.generateKeys(1024);
-                            RSA.create(user, keys.PublicKeys, keys.PrivateKeys);                            
-                                                          
-                               
-                            RSA.exf(pubkey, args[3]);                                                      
-                            Console.WriteLine("Celesi publik u ruajt ne fajllin " + args[3] + " ne folderin keys.");
-
-                        }
-                        else
-                        {
-                            RSA.exf(pubkey, args[3]);
-                            Console.WriteLine("Celesi publik u ruajt ne fajllin " + args[3] + " ne folderin keys.");
-                        }
-                       
+                        File.WriteAllText(path2, xmlString);
+                        Console.WriteLine("Celesi publik u ruajt ne fajllin " + path2);
                     }
                 }
-                else if(args[1].Equals("private"))//komanda e cila kthen celesin privat
+                //kontrollo nese path permban http
+                else if (path.Contains("http"))
                 {
-                    string user = args[2];
-                    string key = "keys\\" + user + ".xml";
-                    if (args[3].Equals(null))
-                    {
-                        if (!File.Exists(key))//nese nuk ekziston fajlli me userin e caktuar e krijon fajllin dhe e shfaq celsin privat
-                        {
-                            var keyGenerator = new RSACryptoKeyGenerator();
-                            var keys = keyGenerator.generateKeys(1024);
-                            RSA.create(user, keys.PublicKeys, keys.PrivateKeys);
-                            RSA.ex(key);
 
+                    //Get request
+
+                    WebRequest request = WebRequest.Create(
+                      path);
+
+                    request.Credentials = CredentialCache.DefaultCredentials;
+
+
+                    WebResponse response = request.GetResponse();
+
+
+
+                    //marrja e trupit te pergjigjes si vlere e celsit
+                    using (Stream dataStream = response.GetResponseStream())
+                    {
+
+                        StreamReader reader = new StreamReader(dataStream);
+
+                        string responseFromServer = reader.ReadToEnd();
+
+                        if (responseFromServer.Contains("<P>"))
+                        {
+                            File.WriteAllText(path1, responseFromServer);
+                            string strXmlParameters = objRSA.ToXmlString(true);
+                            StreamWriter sw = new StreamWriter(path2);
+                            sw.Write(strXmlParameters);
+                            sw.Close();
+                            Console.WriteLine("Celesi privat u ruajt ne fajllin " + path1);
+                            Console.WriteLine("Celesi publik u ruajt ne fajllin " + path2);
                         }
                         else
                         {
-                            RSA.ex(key);
-
+                            File.WriteAllText(path2, responseFromServer);
+                            Console.WriteLine("Celesi publik u ruajt ne fajllin " + path2);
                         }
                     }
-                    else
-                    {
-                        if (!File.Exists(key))//nese nuk ekziston fajlli me userin e caktuar e krijon fajllin dhe e shfaq celsin privat
-                        {
-                            var keyGenerator = new RSACryptoKeyGenerator();
-                            var keys = keyGenerator.generateKeys(1024);
-                            RSA.create(user, keys.PublicKeys, keys.PrivateKeys);
-                            RSA.exf(key, args[3]);
-                            Console.WriteLine("Celesi privat u ruajt ne fajllin " + args[3] + " ne folderin keys.");
 
-                        }
-                        else
-                        {
-                            RSA.exf(key, args[3]);
-                            Console.WriteLine("Celesi privat u ruajt ne fajllin " + args[3] + " ne folderin keys.");
 
-                        }
-                    }
+                    response.Close();
                 }
-                
-
+                else
+                {
+                    Console.WriteLine("Gabim: Fajlli i dhene nuk eshte celes valid.");
+                }
 
             }
 
@@ -392,7 +478,7 @@ namespace _ds
         static RSACryptoServiceProvider objRSA = new RSACryptoServiceProvider();
 
 
-
+        //funksioni per krijimin e userave, ruan celsat ne pathin e caktuar
         public static string create(string user, string pubKey, string prvKey)
         {
             string public_key;
@@ -406,14 +492,14 @@ namespace _ds
             return "";
         }
         
-        public static string ex(string path)
+        public static string ex(string path)//funksioni qe shfaq celsin
         {
             string xmlString = System.IO.File.ReadAllText(path);
             Console.WriteLine(xmlString);
 
             return "";
         }
-        public static string exf(string path, string s)
+        public static string exf(string path, string s)//funksioni qe ben eksportimin e celsit pub/privat ne fajllin e caktuatr
         {
             string path1 = "keys\\" + s;
             string xmlString = System.IO.File.ReadAllText(path);
