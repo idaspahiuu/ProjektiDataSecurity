@@ -112,17 +112,18 @@ namespace _ds
                 }
             }
 
-           
-            
-            else  if (args[0].Equals("export-key"))//komanda export-key
+
+
+            else if (args[0].Equals("export-key"))//komanda export-key
+            {
+                if (args[1].Equals("public"))//per cels publik
                 {
-                    if (args[1].Equals("public"))
-                    {
-                    if (args.Length == 3)
-                    {
+                    if (args.Length == 3)//kontrollon numrin e argumenteve
+
+                    {   //nese jane 3 argumente atehere vetem do te shfaqet permbajtja e celsit
                         string user = args[2];
                         string path = "keys\\" + user + ".pub.xml";
-                        if (!File.Exists(path))
+                        if (!File.Exists(path))//kontrollon a ekziston fajlli nga i cili do te behet eksporti
                         {
                             Console.WriteLine("Gabim: Celesi publik " + path + " nuk ekziston!");
                         }
@@ -132,7 +133,8 @@ namespace _ds
                         }
                     }
                     else
-                    {
+                    {  
+                        //nese jepet edhe shtegu ku do te ekportohet fajlli si argument
                         string user = args[2];
                         string path = "keys\\" + user + ".pub.xml";
                         string path1 = args[3];
@@ -142,18 +144,19 @@ namespace _ds
                         }
                         else
                         {
-                            RSA.exf(path,path1);
+                            RSA.exf(path, path1);
                             Console.WriteLine("Celesi publik u ruajt ne fajllin " + args[3] + " ne folderin keys.");
                         }
                     }
 
 
 
-                    }
-                    else if (args[1].Equals("private"))
+                }
+                else if (args[1].Equals("private"))//per cels privat
+                {
+                    if (args.Length == 3)//kontrollo numrin e argumenteve
                     {
-                    if (args.Length == 3)
-                    {
+                        //nese jane 3 argumente, kthen vetem permbajten e celsit
                         string user = args[2];
                         string path = "keys\\" + user + ".xml";
                         if (!File.Exists(path))
@@ -166,7 +169,7 @@ namespace _ds
                         }
                     }
                     else
-                    {
+                    {   //argumenti 4 paraqet shtegun ku do te eksportohet celsi
                         string user = args[2];
                         string path = "keys\\" + user + ".xml";
                         string path1 = args[3];
@@ -183,8 +186,8 @@ namespace _ds
 
                 }
 
-                }
-            
+            }
+
 
             else if (args[0].Equals("import-key"))//komanda import-key
             {
@@ -273,7 +276,8 @@ namespace _ds
                     Console.WriteLine("Gabim: Fajlli i dhene nuk eshte celes valid.");
                 }
 
-            }
+            }            
+           
 
         }
     }
@@ -476,7 +480,34 @@ namespace _ds
     {
 
         static RSACryptoServiceProvider objRSA = new RSACryptoServiceProvider();
+        //funksioni per enkriptim, RSA
+        public static byte[] Encrypt(byte[] plainText, string path)
+        {
+            string strXmlParameters = "";
+            StreamReader sr = new StreamReader(path);
+            strXmlParameters = sr.ReadToEnd();
+            sr.Close();
 
+            objRSA.FromXmlString(strXmlParameters);        
+
+            byte[] byteCiphertext = objRSA.Encrypt(plainText, true);
+
+            return byteCiphertext;
+        }
+        //funksioni per dekriptim, RSA
+        public static byte[] Decrypt(byte[] plainText, string path)
+        {
+            string strXmlParameters = "";
+            StreamReader sr = new StreamReader(path);
+            strXmlParameters = sr.ReadToEnd();
+            sr.Close();
+
+            objRSA.FromXmlString(strXmlParameters);
+
+            byte[] byteCiphertext = objRSA.Decrypt(plainText, true);
+
+            return byteCiphertext;
+        }
 
         //funksioni per krijimin e userave, ruan celsat ne pathin e caktuar
         public static string create(string user, string pubKey, string prvKey)
