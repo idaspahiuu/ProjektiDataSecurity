@@ -355,6 +355,72 @@ namespace _ds
             }
     }
 
+    
+    
+        else if (args[0].Equals("read-message"))
+            {
+                if (!File.Exists(args[1]))
+                {
+                    string ciphertext = args[1];
+                    string[] word = ciphertext.Split('.');
+                    string name = word[0];
+                    byte[] name1 = Convert.FromBase64String(name);
+                    string name2 = Encoding.UTF8.GetString(name1);
+                    string path = "keys\\" + name2 + ".xml";
+                    if (File.Exists(path))
+                    {
+                        string iv1 = word[1];
+                        byte[] iv = Convert.FromBase64String(iv1);
+                        string key1 = word[2];
+                        byte[] key = RSA.Decrypt(Convert.FromBase64String(key1), path);
+                        string msg = word[3];
+                        byte[] message = Convert.FromBase64String(msg);
+                        DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
+                        MemoryStream memoryStream = new MemoryStream(message);
+                        CryptoStream cryptoStream = new CryptoStream(memoryStream,
+                            cryptoProvider.CreateDecryptor(key, iv), CryptoStreamMode.Read);
+                        StreamReader reader = new StreamReader(cryptoStream);
+                        string plaintext = reader.ReadToEnd();
+                        Console.WriteLine("Marresi:" + name2);
+                        Console.WriteLine("Mesazhi:" + plaintext);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Gabim: Celesi privat " + path + " nuk ekziston!");
+                    }
+                }
+                else
+                {
+                    string ciphertext = File.ReadAllText(args[1]);
+                    string[] word = ciphertext.Split('.');
+                    string name = word[0];
+                    byte[] name1 = Convert.FromBase64String(name);
+                    string name2 = Encoding.UTF8.GetString(name1);
+                    string path = "keys\\" + name2 + ".xml";
+                    if (File.Exists(path))
+                    {
+                        string iv1 = word[1];
+                        byte[] iv = Convert.FromBase64String(iv1);
+                        string key1 = word[2];
+                        byte[] key = RSA.Decrypt(Convert.FromBase64String(key1), path);
+                        string msg = word[3];
+                        byte[] message = Convert.FromBase64String(msg);
+                        DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
+                        MemoryStream memoryStream = new MemoryStream(message);
+                        CryptoStream cryptoStream = new CryptoStream(memoryStream,
+                            cryptoProvider.CreateDecryptor(key, iv), CryptoStreamMode.Read);
+                        StreamReader reader = new StreamReader(cryptoStream);
+                        string plaintext = reader.ReadToEnd();
+                        Console.WriteLine("Marresi:" + name2);
+                        Console.WriteLine("Mesazhi:" + plaintext);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Gabim: Celesi privat " + path + " nuk ekziston!");
+                    }
+                }
+            }
+
         class caesar
         {
 
