@@ -28,3 +28,18 @@ Vigenere-Dekriptimi
 Rail-Fence Dekriptimi
 ![RailFenceE](https://user-images.githubusercontent.com/58752918/77952532-1cc83880-72cc-11ea-9b69-aa311e2225d0.png)
 
+----------------------------------------------------------------------------------------------------------------------------------------
+Faza e pare ne C#
+
+1. Cezar: Enkriptimi dhe dekriptimi
+![Screenshot_4](https://user-images.githubusercontent.com/58752918/81016348-86ee7300-8e60-11ea-8b20-90a6269fc48c.png)
+
+2.Vigenere: Enkriptimi dhe dekriptimi
+![Screenshot_5](https://user-images.githubusercontent.com/58752918/81016784-62df6180-8e61-11ea-87e2-e618292850cb.png)
+
+3.Rail-Fence: Enkriptimi dhe dekriptimi
+![Screenshot_6](https://user-images.githubusercontent.com/58752918/81016965-bb166380-8e61-11ea-8030-f7814c34497e.png)
+----------------------------------------------------------------------------------------------------------------------------------------
+
+
+
