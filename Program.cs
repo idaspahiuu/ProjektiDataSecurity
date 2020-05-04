@@ -280,6 +280,79 @@ namespace _ds
            
 
         }
+    else if (args[0].Equals("write-message"))
+            {
+                if (args.Length == 3)
+                {
+                    string name = args[1];
+                    string message = args[2];
+                    byte[] inputByteArray;
+                    string path = "keys\\" + name + ".pub.xml";
+
+                    if (File.Exists(path))
+                    {
+                        DESCryptoServiceProvider DES = new DESCryptoServiceProvider();
+                        DES.GenerateKey();
+                        DES.GenerateIV();
+                        inputByteArray = Encoding.UTF8.GetBytes(message);
+                        MemoryStream Objmst = new MemoryStream();
+
+                        CryptoStream Objcs = new CryptoStream(Objmst, DES.CreateEncryptor(DES.Key, DES.IV), CryptoStreamMode.Write);
+
+                        Objcs.Write(inputByteArray, 0, inputByteArray.Length);
+
+                        Objcs.FlushFinalBlock();
+
+
+
+                        string ciphertext = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(name)) + "." + Convert.ToBase64String(DES.IV) + "."
+                            + Convert.ToBase64String(RSA.Encrypt(DES.Key, path)) + "." + Convert.ToBase64String(Objmst.ToArray());
+                        Console.WriteLine(ciphertext);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Gabim: Celesi publik " + name + " nuk ekziston!");
+                    }
+
+
+                }
+                else
+                {
+                    string name = args[1];
+                    string message = args[2];
+                    byte[] inputByteArray;
+                    string path1 = "keys\\" + name + ".pub.xml";
+                    string path = args[3];
+
+                    if (File.Exists(path1))
+                    {
+                        DESCryptoServiceProvider DES = new DESCryptoServiceProvider();
+                        DES.GenerateKey();
+                        DES.GenerateIV();
+                        inputByteArray = Encoding.UTF8.GetBytes(message);
+                        MemoryStream Objmst = new MemoryStream();
+
+                        CryptoStream Objcs = new CryptoStream(Objmst, DES.CreateEncryptor(DES.Key, DES.IV), CryptoStreamMode.Write);
+
+                        Objcs.Write(inputByteArray, 0, inputByteArray.Length);
+
+                        Objcs.FlushFinalBlock();
+
+
+
+                        string ciphertext = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(name)) + "." + Convert.ToBase64String(DES.IV) + "."
+                            + Convert.ToBase64String(RSA.Encrypt(DES.Key, path1)) + "." + Convert.ToBase64String(Objmst.ToArray());
+
+
+                        File.WriteAllText(path, ciphertext);
+                        Console.WriteLine("Mesazhi i enkriptuar u ruajt ne fjallin " + path);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Gabim: Celesi publik " + name + " nuk ekziston!");
+                    }
+                }
+            }
     }
 
         class caesar
