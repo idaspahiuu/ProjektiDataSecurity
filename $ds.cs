@@ -276,11 +276,8 @@ namespace _ds
                     Console.WriteLine("Gabim: Fajlli i dhene nuk eshte celes valid.");
                 }
 
-            }            
-           
-
-        }
-    else if (args[0].Equals("write-message"))
+            }
+            else if (args[0].Equals("write-message"))
             {
                 if (args.Length == 3)
                 {
@@ -353,11 +350,7 @@ namespace _ds
                     }
                 }
             }
-    }
-
-    
-    
-        else if (args[0].Equals("read-message"))
+            else if (args[0].Equals("read-message"))
             {
                 if (!File.Exists(args[1]))
                 {
@@ -420,7 +413,8 @@ namespace _ds
                     }
                 }
             }
-
+        }      
+    }
         class caesar
         {
 
