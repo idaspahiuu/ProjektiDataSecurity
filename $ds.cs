@@ -116,14 +116,13 @@ namespace _ds
 
             else if (args[0].Equals("export-key"))//komanda export-key
             {
-                if (args[1].Equals("public"))//per cels publik
+                if (args[1].Equals("public"))
                 {
-                    if (args.Length == 3)//kontrollon numrin e argumenteve
-
-                    {   //nese jane 3 argumente atehere vetem do te shfaqet permbajtja e celsit
+                    if (args.Length == 3)
+                    {
                         string user = args[2];
                         string path = "keys\\" + user + ".pub.xml";
-                        if (!File.Exists(path))//kontrollon a ekziston fajlli nga i cili do te behet eksporti
+                        if (!File.Exists(path))
                         {
                             Console.WriteLine("Gabim: Celesi publik " + path + " nuk ekziston!");
                         }
@@ -133,8 +132,7 @@ namespace _ds
                         }
                     }
                     else
-                    {  
-                        //nese jepet edhe shtegu ku do te ekportohet fajlli si argument
+                    {
                         string user = args[2];
                         string path = "keys\\" + user + ".pub.xml";
                         string path1 = args[3];
@@ -152,11 +150,10 @@ namespace _ds
 
 
                 }
-                else if (args[1].Equals("private"))//per cels privat
+                else if (args[1].Equals("private"))
                 {
-                    if (args.Length == 3)//kontrollo numrin e argumenteve
+                    if (args.Length == 3)
                     {
-                        //nese jane 3 argumente, kthen vetem permbajten e celsit
                         string user = args[2];
                         string path = "keys\\" + user + ".xml";
                         if (!File.Exists(path))
@@ -169,7 +166,7 @@ namespace _ds
                         }
                     }
                     else
-                    {   //argumenti 4 paraqet shtegun ku do te eksportohet celsi
+                    {
                         string user = args[2];
                         string path = "keys\\" + user + ".xml";
                         string path1 = args[3];
@@ -356,18 +353,24 @@ namespace _ds
                 {
                     string ciphertext = args[1];
                     string[] word = ciphertext.Split('.');
+
                     string name = word[0];
                     byte[] name1 = Convert.FromBase64String(name);
                     string name2 = Encoding.UTF8.GetString(name1);
                     string path = "keys\\" + name2 + ".xml";
+
                     if (File.Exists(path))
                     {
                         string iv1 = word[1];
                         byte[] iv = Convert.FromBase64String(iv1);
+
                         string key1 = word[2];
+
                         byte[] key = RSA.Decrypt(Convert.FromBase64String(key1), path);
+
                         string msg = word[3];
                         byte[] message = Convert.FromBase64String(msg);
+
                         DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
                         MemoryStream memoryStream = new MemoryStream(message);
                         CryptoStream cryptoStream = new CryptoStream(memoryStream,
@@ -381,23 +384,31 @@ namespace _ds
                     {
                         Console.WriteLine("Gabim: Celesi privat " + path + " nuk ekziston!");
                     }
+
+
                 }
                 else
                 {
                     string ciphertext = File.ReadAllText(args[1]);
                     string[] word = ciphertext.Split('.');
+
                     string name = word[0];
                     byte[] name1 = Convert.FromBase64String(name);
                     string name2 = Encoding.UTF8.GetString(name1);
                     string path = "keys\\" + name2 + ".xml";
+
                     if (File.Exists(path))
                     {
                         string iv1 = word[1];
                         byte[] iv = Convert.FromBase64String(iv1);
+
                         string key1 = word[2];
+
                         byte[] key = RSA.Decrypt(Convert.FromBase64String(key1), path);
+
                         string msg = word[3];
                         byte[] message = Convert.FromBase64String(msg);
+
                         DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
                         MemoryStream memoryStream = new MemoryStream(message);
                         CryptoStream cryptoStream = new CryptoStream(memoryStream,
@@ -413,8 +424,10 @@ namespace _ds
                     }
                 }
             }
-        }      
+
+        }
     }
+
         class caesar
         {
 
@@ -613,7 +626,7 @@ namespace _ds
     {
 
         static RSACryptoServiceProvider objRSA = new RSACryptoServiceProvider();
-        //funksioni per enkriptim, RSA
+
         public static byte[] Encrypt(byte[] plainText, string path)
         {
             string strXmlParameters = "";
@@ -627,7 +640,6 @@ namespace _ds
 
             return byteCiphertext;
         }
-        //funksioni per dekriptim, RSA
         public static byte[] Decrypt(byte[] plainText, string path)
         {
             string strXmlParameters = "";
@@ -641,7 +653,6 @@ namespace _ds
 
             return byteCiphertext;
         }
-
         //funksioni per krijimin e userave, ruan celsat ne pathin e caktuar
         public static string create(string user, string pubKey, string prvKey)
         {
