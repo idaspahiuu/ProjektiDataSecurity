@@ -67,6 +67,8 @@ Faza e pare ne C#
   
   ~ Export-key ~ kjo komande eksporton celesin publik ose privat varesisht nga argumenti i 2te nga nje fajll i caktuar. Ne rast se nuk caktohet shtegu ku do te eksportohet, atehere shfaqet permbajtja e celesit, ne te kunderten celesi eksportohet ne fajllin e caktuar.
   
+  Ekzekutimi:
+  
   ![Screenshot_13](https://user-images.githubusercontent.com/58752918/81019184-65908580-8e66-11ea-9ef7-2fc630fe1574.png)
   
   Nese caktohet shtegu:
@@ -88,7 +90,7 @@ Faza e pare ne C#
 
   Ekzekutimi i komandes:
   
-  ![Screenshot_18](https://user-images.githubusercontent.com/58752918/81020560-5f4fd880-8e69-11ea-8b51-6f7949761665.png
+  ![Screenshot_18](https://user-images.githubusercontent.com/58752918/81027594-b0b69280-8e7e-11ea-9d7b-9ceb6afd0257.png)
   ![Screenshot_19](https://user-images.githubusercontent.com/58752918/81020597-7262a880-8e69-11ea-82b1-8e70a582c9ef.png)
   
   Permbajtja e fajllave:
