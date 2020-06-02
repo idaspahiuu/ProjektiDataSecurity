@@ -76,16 +76,20 @@ namespace _ds
                 String s = args[1];
                 if (regex1.IsMatch(s))
                 {
-                    string path = s + ".xml";
-                    var keyGenerator = new RSACryptoKeyGenerator();
-                    var keys = keyGenerator.generateKeys(1024);
-                    RSA.create(s, keys.PublicKeys, keys.PrivateKeys);
-                    Console.WriteLine("Eshte krijuar celesi privat " + s + ".xml");
-                    Console.WriteLine("Eshte krijuar celesi privat " + s + ".pub.xml");
+                    string path ="keys\\" + s + ".xml";
                     if (File.Exists(path))
                     {
                         Console.WriteLine("Gabim: Celesi " + s + "eshte krijuar paraprakisht.");
                     }
+                    else
+                    {
+                    var keyGenerator = new RSACryptoKeyGenerator();
+                    var keys = keyGenerator.generateKeys(1024);
+                    RSA.create(s, keys.PublicKeys, keys.PrivateKeys);
+                    Console.WriteLine("Eshte krijuar celesi publik ne shtegun keys\\" + s + ".xml");
+                    Console.WriteLine("Eshte krijuar celesi privat keys\\" + s + ".pub.xml");
+                    }
+                    
                 }
                 else
                 {
