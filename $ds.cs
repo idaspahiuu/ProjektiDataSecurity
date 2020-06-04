@@ -84,7 +84,7 @@ namespace _ds
 
                     string pw, pw1;
 
-                    Console.WriteLine("Jepni fjalekalimin: ");
+                    Console.Write("Jepni fjalekalimin: ");
                     pw = Console.ReadLine();
 
                     var hasNumber = new Regex(@"[0-9]+");
@@ -92,7 +92,7 @@ namespace _ds
 
                     if (hasNumber.IsMatch(pw) && hasMinimum6Chars.IsMatch(pw) || Program.HasSpecialChars(pw).Equals(true))
                     {
-                        Console.WriteLine("Perseritni fjalekalimin: ");
+                        Console.Write("Perseritni fjalekalimin: ");
                         pw1 = Console.ReadLine();
 
                         if (pw.Equals(pw1))
@@ -101,7 +101,7 @@ namespace _ds
                             string path = "keys\\" + s + ".xml";
                             if (File.Exists(path))
                             {
-                                Console.WriteLine("Gabim: Celesi " + s + "eshte krijuar paraprakisht.");
+                                Console.WriteLine("Gabim: Celesi " + s + " eshte krijuar paraprakisht.");
                             }
                             else
                             {
@@ -148,19 +148,26 @@ namespace _ds
             {
                 //komanda delete-user
                 string s = args[1];
-                string path = "keys\\" + s + ".xml";
-                string path1 = "keys\\" + s + ".pub.xml";
-                if (File.Exists(path))
+                if (Program.FshijTeDhenat(s).Equals(true))
                 {
-                    File.Delete(path);
-                    File.Delete(path1);
-                    Console.WriteLine("Eshte larguar celesi publik " + path1);
-                    Console.WriteLine("Eshte larguar celesi privat " + path);
+                    string path = "keys\\" + s + ".xml";
+                    string path1 = "keys\\" + s + ".pub.xml";
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                        File.Delete(path1);
+                        Console.WriteLine("Useri "+ s + " eshte fshire me sukses!");
 
+
+                    }
+                    else if (!File.Exists(path))
+                    {
+                        Console.WriteLine("Gabim: Useri " + s + " nuk ekziston!");
+                    }
                 }
-                else if (!File.Exists(path))
+                else
                 {
-                    Console.WriteLine("Gabim: Celesi " + s + " nuk ekziston!");
+                    Console.WriteLine("Ka ndodhur nje gabim!");
                 }
             }
 
@@ -530,6 +537,36 @@ namespace _ds
             }
 
         }
+        public static bool FshijTeDhenat(string username)
+        {
+            string ConnectionString = " Data Source = localhost ; Initial Catalog = User; Integrated Security = SSPI;";
+
+            SqlConnection objConnection = new SqlConnection(ConnectionString);
+
+            string cmdText = "DELETE FROM User1 WHERE username='" + username  + "';";
+            SqlCommand objCommand = new SqlCommand(cmdText, objConnection);
+
+            try
+            {
+                objConnection.Open();
+                int affectedRows = objCommand.ExecuteNonQuery();
+
+                objConnection.Close();
+                if (affectedRows == 1)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Ka ndodhur nje gabim: " + e.Message);
+                objConnection.Close();
+                return false;
+            }
+
+        }
     }
 
     class caesar
@@ -667,7 +704,6 @@ namespace _ds
 
             for (int i = 0; i < rails; i++)
                 lines.Add(new StringBuilder());
-
             //gjatesia e tekstit
             int[] linesLenght = Enumerable.Repeat(0, rails).ToArray();
 
