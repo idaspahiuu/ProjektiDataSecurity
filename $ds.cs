@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 using System.Net;
+using System.Data.SqlClient;
+
+
 
 
 namespace _ds
@@ -73,23 +76,68 @@ namespace _ds
             {
                 Regex regex1 = new Regex(@"^[a-zA-Z0-9_]+$");
 
+
                 String s = args[1];
+
                 if (regex1.IsMatch(s))
                 {
-                    string path ="keys\\" + s + ".xml";
-                    if (File.Exists(path))
+
+                    string pw, pw1;
+
+                    Console.WriteLine("Jepni fjalekalimin: ");
+                    pw = Console.ReadLine();
+
+                    var hasNumber = new Regex(@"[0-9]+");
+                    var hasMinimum6Chars = new Regex(@".{6,}");
+
+                    if (hasNumber.IsMatch(pw) && hasMinimum6Chars.IsMatch(pw) || Program.HasSpecialChars(pw).Equals(true))
                     {
-                        Console.WriteLine("Gabim: Celesi " + s + "eshte krijuar paraprakisht.");
+                        Console.WriteLine("Perseritni fjalekalimin: ");
+                        pw1 = Console.ReadLine();
+
+                        if (pw.Equals(pw1))
+                        {
+
+                            string path = "keys\\" + s + ".xml";
+                            if (File.Exists(path))
+                            {
+                                Console.WriteLine("Gabim: Celesi " + s + "eshte krijuar paraprakisht.");
+                            }
+                            else
+                            {
+                                byte[] salt1 = Program.GenerateSalt();
+                                string salt = Convert.ToBase64String(salt1);
+                                string p1 = salt + pw;
+
+                                SHA1CryptoServiceProvider objHash = new SHA1CryptoServiceProvider();
+                                byte[] byteHashSaltedPassword = objHash.ComputeHash(Encoding.UTF8.GetBytes(p1));
+                                string password = Convert.ToBase64String(byteHashSaltedPassword);
+
+                                if (Program.RuajTeDhenat(s, salt, password).Equals(true))
+                                {
+
+                                    var keyGenerator = new RSACryptoKeyGenerator();
+                                    var keys = keyGenerator.generateKeys(1024);
+                                    RSA.create(s, keys.PublicKeys, keys.PrivateKeys);
+                                    Console.WriteLine("Eshte krijuar shfrytezuesi " + "'" + s + "'");
+                                    Console.WriteLine("Eshte krijuar celesi publik keys\\" + s + ".xml");
+                                    Console.WriteLine("Eshte krijuar celesi privat keys\\" + s + ".pub.xml");
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Gabim: Fjalekalimet nuk perputhen!");
+
+                        }
+
                     }
                     else
                     {
-                    var keyGenerator = new RSACryptoKeyGenerator();
-                    var keys = keyGenerator.generateKeys(1024);
-                    RSA.create(s, keys.PublicKeys, keys.PrivateKeys);
-                    Console.WriteLine("Eshte krijuar celesi publik ne shtegun keys\\" + s + ".xml");
-                    Console.WriteLine("Eshte krijuar celesi privat keys\\" + s + ".pub.xml");
+                        Console.WriteLine("Gabim: Fjalekalimi duhet te permbaje 6 karaktere dhe se paku nje numer ose simbol!");
                     }
-                    
+
                 }
                 else
                 {
@@ -115,6 +163,7 @@ namespace _ds
                     Console.WriteLine("Gabim: Celesi " + s + " nuk ekziston!");
                 }
             }
+
 
 
 
@@ -430,202 +479,253 @@ namespace _ds
             }
 
         }
+
+        public static bool HasSpecialChars(string stString)
+        {
+            if (stString.Any(ch => !Char.IsLetterOrDigit(ch)))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static byte[] GenerateSalt()
+        {
+            RNGCryptoServiceProvider rncCsp = new RNGCryptoServiceProvider();
+            byte[] salt = new byte[16];
+            rncCsp.GetBytes(salt);
+
+            return salt;
+        }
+        public static bool RuajTeDhenat(string username, string salt, string password)
+        {
+            string ConnectionString = " Data Source = localhost ; Initial Catalog = User; Integrated Security = SSPI;";
+
+            SqlConnection objConnection = new SqlConnection(ConnectionString);
+
+            string cmdText = "INSERT INTO User1(username,salt,password) VALUES ('" + username + "','" + salt + "','" + password + "');";
+            SqlCommand objCommand = new SqlCommand(cmdText, objConnection);
+
+            try
+            {
+                objConnection.Open();
+                int affectedRows = objCommand.ExecuteNonQuery();
+
+                objConnection.Close();
+                if (affectedRows == 1)
+                {
+                    return true;
+                }
+                else
+                    return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Ka ndodhur nje gabim: " + e.Message);
+                objConnection.Close();
+                return false;
+            }
+
+        }
     }
 
-        class caesar
+    class caesar
+    {
+
+        public static char cipher(char ch, int key)
         {
-
-            public static char cipher(char ch, int key)
+            //Kushti i cili merr parasysh edhe hapsirat
+            if (!char.IsLetter(ch))
             {
-                //Kushti i cili merr parasysh edhe hapsirat
-                if (!char.IsLetter(ch))
-                {
 
-                    return ch;
-                }
-
-                char d = char.IsUpper(ch) ? 'A' : 'a';
-                return (char)((((ch + key) - d) % 26) + d);//kthen ciphertextin si charArray
-
-
+                return ch;
             }
 
+            char d = char.IsUpper(ch) ? 'A' : 'a';
+            return (char)((((ch + key) - d) % 26) + d);//kthen ciphertextin si charArray
 
-            public static string Encipher(string input, int key)
-            {
-                string output = string.Empty;
 
-                foreach (char ch in input)
-                    output += cipher(ch, key);
-
-                return output;//kthen cipphertextin si string
-            }
-
-            public static string Decipher(string input, int key)
-            {
-                return Encipher(input, 26 - key);//kthen plaintextin
-            }
-        };
-
-        class vigenere
-        {
-            private static int Mod(int a, int b)
-            {
-                return (a % b + b) % b;
-            }//Funksioni per modulim
-
-            private static string Cipher(string input, string key, bool encipher)
-            {
-                for (int i = 0; i < key.Length; ++i)
-                    if (!char.IsLetter(key[i]))
-                        return null; // Kushti qe merr parasysh edhe hapsirat
-
-                string output = string.Empty;
-                int p = 0;
-
-                for (int i = 0; i < input.Length; ++i)
-                {
-                    if (char.IsLetter(input[i]))
-                    {
-                        bool cIsUpper = char.IsUpper(input[i]);
-                        char offset = cIsUpper ? 'A' : 'a';
-                        int indeksi = (i - p) % key.Length;
-                        int k = (cIsUpper ? char.ToUpper(key[indeksi]) : char.ToLower(key[indeksi])) - offset;
-                        k = encipher ? k : -k;
-                        char ch = (char)((Mod(((input[i] + k) - offset), 26)) + offset);
-                        output += ch;
-                    }
-                    else
-                    {
-                        output += input[i];
-                        ++p;
-                    }
-                }
-
-                return output;
-            }
-            //funksioni per enkriptim
-            public static string Encipher(string input, string key)
-            {
-                return Cipher(input, key, true);
-            }
-            //funksioni per dekriptim
-            public static string Decipher(string input, string key)
-            {
-                return Cipher(input, key, false);
-            }
         }
 
-        public static class RailFenceCipher
+
+        public static string Encipher(string input, int key)
+        {
+            string output = string.Empty;
+
+            foreach (char ch in input)
+                output += cipher(ch, key);
+
+            return output;//kthen cipphertextin si string
+        }
+
+        public static string Decipher(string input, int key)
+        {
+            return Encipher(input, 26 - key);//kthen plaintextin
+        }
+    };
+
+    class vigenere
+    {
+        private static int Mod(int a, int b)
+        {
+            return (a % b + b) % b;
+        }//Funksioni per modulim
+
+        private static string Cipher(string input, string key, bool encipher)
+        {
+            for (int i = 0; i < key.Length; ++i)
+                if (!char.IsLetter(key[i]))
+                    return null; // Kushti qe merr parasysh edhe hapsirat
+
+            string output = string.Empty;
+            int p = 0;
+
+            for (int i = 0; i < input.Length; ++i)
+            {
+                if (char.IsLetter(input[i]))
+                {
+                    bool cIsUpper = char.IsUpper(input[i]);
+                    char offset = cIsUpper ? 'A' : 'a';
+                    int indeksi = (i - p) % key.Length;
+                    int k = (cIsUpper ? char.ToUpper(key[indeksi]) : char.ToLower(key[indeksi])) - offset;
+                    k = encipher ? k : -k;
+                    char ch = (char)((Mod(((input[i] + k) - offset), 26)) + offset);
+                    output += ch;
+                }
+                else
+                {
+                    output += input[i];
+                    ++p;
+                }
+            }
+
+            return output;
+        }
+        //funksioni per enkriptim
+        public static string Encipher(string input, string key)
+        {
+            return Cipher(input, key, true);
+        }
+        //funksioni per dekriptim
+        public static string Decipher(string input, string key)
+        {
+            return Cipher(input, key, false);
+        }
+    }
+    public static class RailFenceCipher
+    {
+
+        public static string Encrypt(string text, int rails)
+        {
+            // Fshin karakeret e panevojshme ne tekst
+            text = text.ToUpper();
+            text = Regex.Replace(text, @"[^A-Z0-9]", string.Empty);
+
+            var lines = new List<StringBuilder>();
+
+            for (int i = 0; i < rails; i++)
+                lines.Add(new StringBuilder());
+
+            //Mbushja e matrices
+
+            int currentLine = 0;
+            int direction = 1;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                lines[currentLine].Append(text[i]);
+
+                if (currentLine == 0)
+                    direction = 1;
+                else if (currentLine == rails - 1)
+                    direction = -1;
+
+                currentLine += direction;
+            }
+
+
+
+            //rezultati ne nje rresht te vetem
+            StringBuilder result = new StringBuilder();
+
+            for (int i = 0; i < rails; i++)
+                result.Append(lines[i].ToString());
+
+            return result.ToString();
+        }
+
+        public static string Decrypt(string text, int rails)
         {
 
-            public static string Encrypt(string text, int rails)
+            text = text.ToUpper();
+            text = Regex.Replace(text, @"[^A-Z0-9]", string.Empty);
+
+            var lines = new List<StringBuilder>();
+
+            for (int i = 0; i < rails; i++)
+                lines.Add(new StringBuilder());
+
+            //gjatesia e tekstit
+            int[] linesLenght = Enumerable.Repeat(0, rails).ToArray();
+
+
+            int currentLine = 0;
+            int direction = 0;
+
+            for (int i = 0; i < text.Length; i++)
             {
-                // Fshin karakeret e panevojshme ne tekst
-                text = text.ToUpper();
-                text = Regex.Replace(text, @"[^A-Z0-9]", string.Empty);
+                linesLenght[currentLine]++;
 
-                var lines = new List<StringBuilder>();
+                if (currentLine == 0)
+                    direction = 1;
+                else if (currentLine == rails - 1)
+                    direction = -1;
 
-                for (int i = 0; i < rails; i++)
-                    lines.Add(new StringBuilder());
-
-                //Mbushja e matrices
-
-                int currentLine = 0;
-                int direction = 1;
-
-                for (int i = 0; i < text.Length; i++)
-                {
-                    lines[currentLine].Append(text[i]);
-
-                    if (currentLine == 0)
-                        direction = 1;
-                    else if (currentLine == rails - 1)
-                        direction = -1;
-
-                    currentLine += direction;
-                }
-
-
-
-                //rezultati ne nje rresht te vetem
-                StringBuilder result = new StringBuilder();
-
-                for (int i = 0; i < rails; i++)
-                    result.Append(lines[i].ToString());
-
-                return result.ToString();
+                currentLine += direction;
             }
 
-            public static string Decrypt(string text, int rails)
+            int currentChar = 0;
+
+            for (int line = 0; line < rails; line++)
+            {
+                for (int c = 0; c < linesLenght[line]; c++)
+                {
+                    lines[line].Append(text[currentChar]);
+                    currentChar++;
+                }
+            }
+
+            StringBuilder result = new StringBuilder();
+
+            currentLine = 0;
+            direction = 1;
+
+            //Tregon nga cili rresht merret karakteri
+            int[] currentReadLine = Enumerable.Repeat(0, rails).ToArray();
+
+            for (int i = 0; i < text.Length; i++)
             {
 
-                text = text.ToUpper();
-                text = Regex.Replace(text, @"[^A-Z0-9]", string.Empty);
+                result.Append(lines[currentLine][currentReadLine[currentLine]]);
+                currentReadLine[currentLine]++;
 
-                var lines = new List<StringBuilder>();
+                if (currentLine == 0)
+                    direction = 1;
+                else if (currentLine == rails - 1)
+                    direction = -1;
 
-                for (int i = 0; i < rails; i++)
-                    lines.Add(new StringBuilder());
-
-                //gjatesia e tekstit
-                int[] linesLenght = Enumerable.Repeat(0, rails).ToArray();
-
-
-                int currentLine = 0;
-                int direction = 0;
-
-                for (int i = 0; i < text.Length; i++)
-                {
-                    linesLenght[currentLine]++;
-
-                    if (currentLine == 0)
-                        direction = 1;
-                    else if (currentLine == rails - 1)
-                        direction = -1;
-
-                    currentLine += direction;
-                }
-
-                int currentChar = 0;
-
-                for (int line = 0; line < rails; line++)
-                {
-                    for (int c = 0; c < linesLenght[line]; c++)
-                    {
-                        lines[line].Append(text[currentChar]);
-                        currentChar++;
-                    }
-                }
-
-                StringBuilder result = new StringBuilder();
-
-                currentLine = 0;
-                direction = 1;
-
-                //Tregon nga cili rresht merret karakteri
-                int[] currentReadLine = Enumerable.Repeat(0, rails).ToArray();
-
-                for (int i = 0; i < text.Length; i++)
-                {
-
-                    result.Append(lines[currentLine][currentReadLine[currentLine]]);
-                    currentReadLine[currentLine]++;
-
-                    if (currentLine == 0)
-                        direction = 1;
-                    else if (currentLine == rails - 1)
-                        direction = -1;
-
-                    currentLine += direction;
-                }
-
-                return result.ToString();
-
+                currentLine += direction;
             }
+
+            return result.ToString();
 
         }
+
+
+    }
     class RSA
     {
 
@@ -638,7 +738,7 @@ namespace _ds
             strXmlParameters = sr.ReadToEnd();
             sr.Close();
 
-            objRSA.FromXmlString(strXmlParameters);        
+            objRSA.FromXmlString(strXmlParameters);
 
             byte[] byteCiphertext = objRSA.Encrypt(plainText, true);
 
@@ -670,7 +770,7 @@ namespace _ds
 
             return "";
         }
-        
+
         public static string ex(string path)//funksioni qe shfaq celsin
         {
             string xmlString = System.IO.File.ReadAllText(path);
@@ -689,34 +789,34 @@ namespace _ds
 
     }
 
-        public class RSAKeysTypes
-        {
-            public string PublicKeys { get; set; }
-            public string PrivateKeys { get; set; }
-        }
+    public class RSAKeysTypes
+    {
+        public string PublicKeys { get; set; }
+        public string PrivateKeys { get; set; }
+    }
 
-        public class RSACryptoKeyGenerator
+    public class RSACryptoKeyGenerator
+    {
+        public RSAKeysTypes generateKeys(int size)
         {
-            public RSAKeysTypes generateKeys(int size)
+            var rsaTypes = new RSAKeysTypes();
+            using (var provider = new RSACryptoServiceProvider(size))
             {
-                var rsaTypes = new RSAKeysTypes();
-                using (var provider = new RSACryptoServiceProvider(size))
-                {
-                    var pubKey = provider.ToXmlString(false);
-                    var prvKey = provider.ToXmlString(true);
-                    rsaTypes.PublicKeys = pubKey;
-                    rsaTypes.PrivateKeys = prvKey;
-                }
-                return rsaTypes;
+                var pubKey = provider.ToXmlString(false);
+                var prvKey = provider.ToXmlString(true);
+                rsaTypes.PublicKeys = pubKey;
+                rsaTypes.PrivateKeys = prvKey;
             }
+            return rsaTypes;
         }
-      
-    
-            
-    
+    }
+
+
+
+
 }
 
-    
+
 
 
 
