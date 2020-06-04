@@ -83,19 +83,80 @@ namespace _ds
                 {
 
                     string pw, pw1;
+                    Console.WriteLine("\t");
+                    Console.WriteLine("Jepni fjalekalimin: ");
+                    StringBuilder pass = new StringBuilder();
 
-                    Console.Write("Jepni fjalekalimin: ");
-                    pw = Console.ReadLine();
+                    char key;
+
+                    while ((key = Console.ReadKey(true).KeyChar) != '\r')
+
+                    {
+
+                        if (key == '\b' && pass.Length > 0)
+
+                        {
+
+                            Console.Write(key + "" + key);
+
+                            pass = pass.Remove(pass.Length - 1, 1);
+
+                        }
+
+                        else if (Char.IsLetterOrDigit(key))
+
+                        {
+
+                            Console.Write("*");
+
+                            pass = pass.Append(key);
+
+                        }
+
+                    }
+                    pw = pass.ToString();
+
 
                     var hasNumber = new Regex(@"[0-9]+");
                     var hasMinimum6Chars = new Regex(@".{6,}");
 
                     if (hasNumber.IsMatch(pw) && hasMinimum6Chars.IsMatch(pw) || Program.HasSpecialChars(pw).Equals(true))
                     {
-                        Console.Write("Perseritni fjalekalimin: ");
-                        pw1 = Console.ReadLine();
+                        Console.WriteLine("\t");
+                        Console.WriteLine("Perseritni fjalekalimin: ");
+                        StringBuilder pass1 = new StringBuilder();
 
-                        if (pw.Equals(pw1))
+                        char key1;
+
+                        while ((key1 = Console.ReadKey(true).KeyChar) != '\r')
+
+                        {
+
+                            if (key1 == '\b' && pass.Length > 0)
+
+                            {
+
+                                Console.Write(key1 + "" + key1);
+
+                                pass1 = pass1.Remove(pass1.Length - 1, 1);
+
+                            }
+
+                            else if (Char.IsLetterOrDigit(key1))
+
+                            {
+
+                                Console.Write("*");
+
+                                pass1 = pass1.Append(key1);
+
+                            }
+
+                        }
+                        pw1 = pass1.ToString();
+                    
+
+                    if (pw.Equals(pw1))
                         {
 
                             string path = "keys\\" + s + ".xml";
@@ -119,7 +180,7 @@ namespace _ds
                                     var keyGenerator = new RSACryptoKeyGenerator();
                                     var keys = keyGenerator.generateKeys(1024);
                                     RSA.create(s, keys.PublicKeys, keys.PrivateKeys);
-                                    Console.WriteLine("Eshte krijuar shfrytezuesi " + "'" + s + "'");
+                                    Console.WriteLine("\nEshte krijuar shfrytezuesi " + "'" + s + "'");
                                     Console.WriteLine("Eshte krijuar celesi publik keys\\" + s + ".xml");
                                     Console.WriteLine("Eshte krijuar celesi privat keys\\" + s + ".pub.xml");
                                 }
@@ -486,6 +547,7 @@ namespace _ds
             }
 
         }
+
 
         public static bool HasSpecialChars(string stString)
         {
