@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 using System.Net;
 using System.Data.SqlClient;
+
 
 
 
@@ -132,7 +134,7 @@ namespace _ds
 
                         {
 
-                            if (key1 == '\b' && pass.Length > 0)
+                            if (key1 == '\b' && pass1.Length > 0)
 
                             {
 
@@ -154,9 +156,9 @@ namespace _ds
 
                         }
                         pw1 = pass1.ToString();
-                    
 
-                    if (pw.Equals(pw1))
+
+                        if (pw.Equals(pw1))
                         {
 
                             string path = "keys\\" + s + ".xml";
@@ -205,6 +207,78 @@ namespace _ds
                     Console.WriteLine("Gabim: Emrat duhet te përmbajne vetem simbolet A-Z, a-z, 0-9, dhe \"_\" !");
                 }
             }
+            else if (args[0].Equals("login"))
+            {
+                string user = args[1];
+
+                string connetionString;
+                SqlConnection cnn;
+                connetionString = @"Data Source = localhost ; Initial Catalog = User; Integrated Security = SSPI;";
+                cnn = new SqlConnection(connetionString);
+                cnn.Open();
+
+                SqlCommand command;
+                SqlDataReader dataReader;
+                String sql, output = "", output1 = "";
+
+                sql = "Select salt,password from User1 where username='" + user + "';";
+                command = new SqlCommand(sql, cnn);
+                dataReader = command.ExecuteReader();
+                while (dataReader.Read())
+                {
+                    output = output + dataReader.GetValue(0);
+                    output1 = output1 + dataReader.GetValue(1);
+                }
+                string pw, pw1;
+                Console.Write("Jepni fjalkalimin: ");
+                StringBuilder pass1 = new StringBuilder();
+
+                char key1;
+
+                while ((key1 = Console.ReadKey(true).KeyChar) != '\r')
+
+                {
+
+                    if (key1 == '\b' && pass1.Length > 0)
+
+                    {
+
+                        Console.Write(key1 + "" + key1);
+
+                        pass1 = pass1.Remove(pass1.Length - 1, 1);
+
+                    }
+
+                    else if (Char.IsLetterOrDigit(key1))
+
+                    {
+
+                        Console.Write("*");
+
+                        pass1 = pass1.Append(key1);
+
+                    }
+
+                }
+                pw = pass1.ToString();
+                pw1 = output + pw;
+
+                SHA1CryptoServiceProvider objHash = new SHA1CryptoServiceProvider();
+                byte[] byteHashSaltedPassword = objHash.ComputeHash(Encoding.UTF8.GetBytes(pw1));
+                string password = Convert.ToBase64String(byteHashSaltedPassword);
+
+                if (password.Equals(output1))
+                {
+                    Program.GenerateToken(user);
+                }
+                else
+                {
+                    Console.WriteLine("Shfrytezuesi ose fjalekalimi i gabuar!");
+                }
+
+                cnn.Close();
+
+            }
             else if (args[0].Equals("delete-user"))
             {
                 //komanda delete-user
@@ -217,7 +291,7 @@ namespace _ds
                     {
                         File.Delete(path);
                         File.Delete(path1);
-                        Console.WriteLine("Useri "+ s + " eshte fshire me sukses!");
+                        Console.WriteLine("Useri " + s + " eshte fshire me sukses!");
 
 
                     }
@@ -547,8 +621,6 @@ namespace _ds
             }
 
         }
-
-
         public static bool HasSpecialChars(string stString)
         {
             if (stString.Any(ch => !Char.IsLetterOrDigit(ch)))
@@ -560,6 +632,24 @@ namespace _ds
                 return false;
             }
         }
+        public static void GenerateToken(string user)
+        {
+            RSACryptoServiceProvider objRSA = new RSACryptoServiceProvider();
+            SHA1CryptoServiceProvider hashFunksioni = new SHA1CryptoServiceProvider();
+
+            string path = "keys\\" + user + ".xml";
+            byte[] time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
+            string token = Convert.ToBase64String(Encoding.UTF8.GetBytes(user)) + "." + Convert.ToBase64String(time);
+            string strXmlParameters = "";
+            StreamReader sr = new StreamReader(path);
+            strXmlParameters = sr.ReadToEnd();
+            sr.Close();
+
+            objRSA.FromXmlString(strXmlParameters);
+            byte[] byteSignedText = objRSA.SignData(Encoding.UTF8.GetBytes(token), new SHA1CryptoServiceProvider());
+
+            Console.WriteLine("\nToken: " + Convert.ToBase64String(byteSignedText));
+         }
 
         public static byte[] GenerateSalt()
         {
