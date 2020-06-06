@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -277,6 +277,43 @@ namespace _ds
                 }
 
                 cnn.Close();
+
+            }
+            else if(args[0].Equals("status"))
+            {
+                RSACryptoServiceProvider objRSA = new RSACryptoServiceProvider();
+
+                string token = args[1];
+                string[] word= token.Split('.');
+                string user = word[0];
+                byte[] name1 = Convert.FromBase64String(user);
+                string name2 = Encoding.UTF8.GetString(name1);
+                string path = "keys\\" + name2 + ".pub.xml";
+                string time = Encoding.UTF8.GetString(Convert.FromBase64String(word[1]));
+                string plainTxt = name2 + "." + time;
+
+
+
+                string strXmlParameters = "";
+                StreamReader sr = new StreamReader(path);
+                strXmlParameters = sr.ReadToEnd();
+                sr.Close();
+
+                objRSA.FromXmlString(strXmlParameters);
+
+                byte[] byteSignedValue = Convert.FromBase64String(word[2]);
+                byte[] bytePlaintexti = Encoding.UTF8.GetBytes(plainTxt);
+
+                bool Verified = objRSA.VerifyData(bytePlaintexti, new SHA1CryptoServiceProvider(), byteSignedValue);
+
+                if (Verified)
+
+                    Console.WriteLine("Tokeni nuk eshte valid!");
+
+                else
+                    Console.WriteLine("User: " + name2 + "\n Valid: po" + "\nData e skadimit: " + DateTime.Parse(time));
+                
+
 
             }
             else if (args[0].Equals("delete-user"))
@@ -638,8 +675,9 @@ namespace _ds
             SHA1CryptoServiceProvider hashFunksioni = new SHA1CryptoServiceProvider();
 
             string path = "keys\\" + user + ".xml";
-            byte[] time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
+            byte[] time = BitConverter.GetBytes(DateTime.Now.AddMinutes(20.0));
             string token = Convert.ToBase64String(Encoding.UTF8.GetBytes(user)) + "." + Convert.ToBase64String(time);
+            
             string strXmlParameters = "";
             StreamReader sr = new StreamReader(path);
             strXmlParameters = sr.ReadToEnd();
@@ -647,10 +685,9 @@ namespace _ds
 
             objRSA.FromXmlString(strXmlParameters);
             byte[] byteSignedText = objRSA.SignData(Encoding.UTF8.GetBytes(token), new SHA1CryptoServiceProvider());
-
-            Console.WriteLine("\nToken: " + Convert.ToBase64String(byteSignedText));
+            string token1 = token + "." + Convert.ToBase64String(byteSignedText);
+            Console.WriteLine("\nToken: " + token1);
          }
-
         public static byte[] GenerateSalt()
         {
             RNGCryptoServiceProvider rncCsp = new RNGCryptoServiceProvider();
