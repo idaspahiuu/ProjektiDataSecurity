@@ -203,9 +203,12 @@ Ne rast se ndryshojme diqka emrin e derguesit verejme se shfaqet mesazhi:
 
 Komanda read-message ben dekriptimin e mesazhit te shkruar dhe tregon nese nenshkrimi eshte valid apo jo. Ekzekutimi i komandes:
 
-![read](https://user-images.githubusercontent.com/59438009/83977255-761d9b00-a8ff-11ea-89ce-a997b8c30867.jpg)
+![read](https://user-images.githubusercontent.com/59438009/83977255-761d9b00-a8ff-11ea-89ce-a997b8c367.jpg)
+
+----------------------------------------------------------------------------------------------------------------------------------------
 
 
+PEr realizimin e projektit i jemi referuar ushtrimeve deh disa burimeve online.
 
 
 
