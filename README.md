@@ -106,7 +106,7 @@ Faza e pare ne C#
   
 ----------------------------------------------------------------------------------------------------------------------------------------  
   
-  ~ Write-message ~ kjo komande mundeson enkriptimin e mesazhit me ane te nje seme te dhene, ne rast se nuk jiper shtegu ateher shfaqet mesazhi i enkriptuar, perndryshe mesazhi i enkriptuar ruhet ne nje fajll te caktuar.
+  ~ Write-message ~ kjo komande mundeson enkriptimin e mesazhit me ane te nje skeme te dhene, ne rast se nuk jipet shtegu ateher shfaqet mesazhi i enkriptuar, perndryshe mesazhi i enkriptuar ruhet ne nje fajll te caktuar.
   
   ![Screenshot_32](https://user-images.githubusercontent.com/58752918/81022884-1733b480-8e6f-11ea-96ee-6f1e929a9d39.png)
   ![Screenshot_30](https://user-images.githubusercontent.com/58752918/81022778-cf149200-8e6e-11ea-8fb7-fb884ad0f452.png)
@@ -174,11 +174,38 @@ Komanda login sherben per "kycje" te userit. Ne raste se jane te dhenat e sakta,
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-~Status
+~ Status
 
 Komanda status jep te dhenat rreth tokenit nese eshte valid ose jo, si dhe paraqet daten e skadimit te tokenit. Verifikimi behet me ane te celsit publik te userit. Ekzekutimi i komandes:
 
 ![Screenshot_10](https://user-images.githubusercontent.com/58752918/83970698-570b1300-a8d7-11ea-8508-15826fb3530c.png)
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+~ Write-message
+
+Komanda write-message, e zgjeruar, e cila perfshin edhe derguesin si dhe nenshkruan tekstin nese tokeni i userit eshte valid.
+Ekzekutimi i komandes: 
+
+![Screenshot_11](https://user-images.githubusercontent.com/59438009/83974976-4e273b00-a8f1-11ea-8152-e88d9b71578f.png)
+
+
+Ne rast se ndryshojme diqka emrin e derguesit verejme se shfaqet mesazhi:
+
+![Screenshot_13](https://user-images.githubusercontent.com/59438009/83976900-4ec5ce80-a8fd-11ea-913e-be8cbe597069.png)
+
+![Screenshot_14](https://user-images.githubusercontent.com/59438009/83976922-7452d800-a8fd-11ea-9bb5-23dc358e913a.png)
+
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+~ Read-message
+
+Komanda read-message ben dekriptimin e mesazhit te shkruar dhe tregon nese nenshkrimi eshte valid apo jo. Ekzekutimi i komandes:
+
+![read](https://user-images.githubusercontent.com/59438009/83977255-761d9b00-a8ff-11ea-89ce-a997b8c30867.jpg)
+
+
 
 
 
