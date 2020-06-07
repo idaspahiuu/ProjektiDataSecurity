@@ -273,7 +273,7 @@ namespace _ds
                 }
                 else
                 {
-                    Console.WriteLine("Shfrytezuesi ose fjalekalimi i gabuar!");
+                    Console.WriteLine("\nShfrytezuesi ose fjalekalimi i gabuar!");
                 }
 
                 cnn.Close();
@@ -306,11 +306,19 @@ namespace _ds
                 byte[] bytePlaintexti = Encoding.UTF8.GetBytes(plainTxt);
 
                 bool Verified = objRSA.VerifyData(bytePlaintexti, new SHA1CryptoServiceProvider(), byteSignedValue);
+                DateTime saveUtcNow = DateTime.UtcNow;
 
                 if (Verified)
-                    Console.WriteLine("User: " + name2 + "\nValid: po" + "\nData e skadimit: " + time);
-                
+                {
+                    if (saveUtcNow.TimeOfDay > time.TimeOfDay)
+                    {
+                        Console.WriteLine("Tokeni ka skaduar!");
+                    }
+                    else {
+                        Console.WriteLine("User: " + name2 + "\nValid: po" + "\nData e skadimit: " + time);
+                    }
 
+                }
                 else
                     Console.WriteLine("Tokeni nuk eshte valid!");
 
@@ -546,11 +554,17 @@ namespace _ds
                 }
                 else
                 {
+
+                    RSACryptoServiceProvider objRSA = new RSACryptoServiceProvider();
                     string name = args[1];
                     string message = args[2];
                     byte[] inputByteArray;
                     string path1 = "keys\\" + name + ".pub.xml";
-                    string path = args[3];
+                    string sender = args[3];
+                    string token = args[4];
+                    string path = "keys\\" + sender + ".pub.xml";
+                    string path2 = "keys\\" + sender + ".xml";
+                    string[] word = token.Split('.');
 
                     if (File.Exists(path1))
                     {
@@ -566,14 +580,44 @@ namespace _ds
 
                         Objcs.FlushFinalBlock();
 
+                        string plainTxt = word[0] + "." + word[1];
 
 
-                        string ciphertext = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(name)) + "." + Convert.ToBase64String(DES.IV) + "."
-                            + Convert.ToBase64String(RSA.Encrypt(DES.Key, path1)) + "." + Convert.ToBase64String(Objmst.ToArray());
 
+                        string strXmlParameters = "";
+                        StreamReader sr = new StreamReader(path);
+                        strXmlParameters = sr.ReadToEnd();
+                        sr.Close();
 
-                        File.WriteAllText(path, ciphertext);
-                        Console.WriteLine("Mesazhi i enkriptuar u ruajt ne fjallin " + path);
+                        objRSA.FromXmlString(strXmlParameters);
+
+                        byte[] byteSignedValue = Convert.FromBase64String(word[2]);
+                        byte[] bytePlaintexti = Encoding.UTF8.GetBytes(plainTxt);
+
+                        bool Verified = objRSA.VerifyData(bytePlaintexti, new SHA1CryptoServiceProvider(), byteSignedValue);
+                        DateTime saveUtcNow = DateTime.UtcNow;
+
+                        if (Verified)
+                        {
+                            string strXmlParameters1 = "";
+                            StreamReader sr1 = new StreamReader(path2);
+                            strXmlParameters1 = sr1.ReadToEnd();
+                            sr.Close();
+
+                            objRSA.FromXmlString(strXmlParameters1);
+
+                            byte[] byteSignedText = objRSA.SignData(Encoding.UTF8.GetBytes(token), new SHA1CryptoServiceProvider());
+                            string token1 = token + "." + Convert.ToBase64String(byteSignedText);
+                            string ciphertext = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(name)) + "." + Convert.ToBase64String(DES.IV) + "."
+                            + Convert.ToBase64String(RSA.Encrypt(DES.Key, path1)) + "." + Convert.ToBase64String(objRSA.SignData(Objmst.ToArray(), new SHA1CryptoServiceProvider()));
+
+                            Console.WriteLine("\n" + ciphertext);
+                        }
+                        else
+                        {
+                            Console.WriteLine("Tokeni nuk eshte valid!");
+                        }
+
                     }
                     else
                     {
