@@ -191,14 +191,14 @@ namespace _ds
                         }
                         else
                         {
-                            Console.WriteLine("Gabim: Fjalekalimet nuk perputhen!");
+                            Console.WriteLine("\nGabim: Fjalekalimet nuk perputhen!");
 
                         }
 
                     }
                     else
                     {
-                        Console.WriteLine("Gabim: Fjalekalimi duhet te permbaje 6 karaktere dhe se paku nje numer ose simbol!");
+                        Console.WriteLine("\nGabim: Fjalekalimi duhet te permbaje 6 karaktere dhe se paku nje numer ose simbol!");
                     }
 
                 }
@@ -289,8 +289,9 @@ namespace _ds
                 byte[] name1 = Convert.FromBase64String(user);
                 string name2 = Encoding.UTF8.GetString(name1);
                 string path = "keys\\" + name2 + ".pub.xml";
-                string time = Encoding.UTF8.GetString(Convert.FromBase64String(word[1]));
-                string plainTxt = name2 + "." + time;
+                long utcNowLong = BitConverter.ToInt64(Convert.FromBase64String(word[1]),0);
+                DateTime time = DateTime.FromBinary(utcNowLong);
+                string plainTxt = word[0] + "." + word[1];
 
 
 
@@ -307,12 +308,13 @@ namespace _ds
                 bool Verified = objRSA.VerifyData(bytePlaintexti, new SHA1CryptoServiceProvider(), byteSignedValue);
 
                 if (Verified)
-
-                    Console.WriteLine("Tokeni nuk eshte valid!");
+                    Console.WriteLine("User: " + name2 + "\nValid: po" + "\nData e skadimit: " + time);
+                
 
                 else
-                    Console.WriteLine("User: " + name2 + "\n Valid: po" + "\nData e skadimit: " + DateTime.Parse(time));
-                
+                    Console.WriteLine("Tokeni nuk eshte valid!");
+
+
 
 
             }
@@ -675,7 +677,9 @@ namespace _ds
             SHA1CryptoServiceProvider hashFunksioni = new SHA1CryptoServiceProvider();
 
             string path = "keys\\" + user + ".xml";
-            byte[] time = BitConverter.GetBytes(DateTime.Now.AddMinutes(20.0));
+            DateTime utcNow = DateTime.Now.AddMinutes(20.0);
+            long utcNowAsLong = utcNow.ToBinary();
+            byte[] time = BitConverter.GetBytes(utcNowAsLong);
             string token = Convert.ToBase64String(Encoding.UTF8.GetBytes(user)) + "." + Convert.ToBase64String(time);
             
             string strXmlParameters = "";
