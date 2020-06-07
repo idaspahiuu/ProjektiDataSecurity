@@ -607,9 +607,10 @@ namespace _ds
                             objRSA.FromXmlString(strXmlParameters1);
 
                             byte[] byteSignedText = objRSA.SignData(Encoding.UTF8.GetBytes(token), new SHA1CryptoServiceProvider());
+
                             string token1 = token + "." + Convert.ToBase64String(byteSignedText);
                             string ciphertext = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(name)) + "." + Convert.ToBase64String(DES.IV) + "."
-                            + Convert.ToBase64String(RSA.Encrypt(DES.Key, path1)) + "." + Convert.ToBase64String(objRSA.SignData(Objmst.ToArray(), new SHA1CryptoServiceProvider()));
+                            + Convert.ToBase64String(RSA.Encrypt(DES.Key, path1)) + "." + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(sender)) + "." + Convert.ToBase64String(objRSA.SignData(Objmst.ToArray(), new SHA1CryptoServiceProvider()));
 
                             Console.WriteLine("\n" + ciphertext);
                         }
@@ -625,7 +626,7 @@ namespace _ds
                     }
                 }
             }
-            else if (args[0].Equals("read-message"))
+            else if (args[0].Equals("read-message"))    
             {
                 if (!File.Exists(args[1]))
                 {
@@ -639,6 +640,7 @@ namespace _ds
 
                     if (File.Exists(path))
                     {
+                        RSACryptoServiceProvider objRSA = new RSACryptoServiceProvider();
                         string iv1 = word[1];
                         byte[] iv = Convert.FromBase64String(iv1);
 
@@ -648,16 +650,50 @@ namespace _ds
 
                         string msg = word[3];
                         byte[] message = Convert.FromBase64String(msg);
+                        
 
+                        string sender = Encoding.UTF8.GetString(Convert.FromBase64String(word[4]));
+                        string path1 = "keys\\" + sender + ".pub.xml";
+
+
+                        string strXmlParameters = "";
+                        StreamReader sr = new StreamReader(path1);
+                        strXmlParameters = sr.ReadToEnd();
+                        sr.Close();
+
+                        objRSA.FromXmlString(strXmlParameters);
+
+                       
+
+       
 
                         DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
                         MemoryStream memoryStream = new MemoryStream(message);
                         CryptoStream cryptoStream = new CryptoStream(memoryStream,
                             cryptoProvider.CreateDecryptor(key, iv), CryptoStreamMode.Read);
-                        StreamReader reader = new StreamReader(cryptoStream);
+                        StreamReader reader = new StreamReader(cryptoStream);           
                         string plaintext = reader.ReadToEnd();
-                        Console.WriteLine("Marresi:" + name2);
-                        Console.WriteLine("Mesazhi:" + plaintext);
+
+                        bool Verified = objRSA.VerifyData(message, new SHA1CryptoServiceProvider(), Convert.FromBase64String(word[5]));
+                        if (Verified)
+                        {
+                            Console.WriteLine("Marresi:" + name2);
+                            Console.WriteLine("Mesazhi:" + plaintext);
+                            Console.WriteLine("Derguesi:" + sender);
+                            Console.WriteLine("Nenshkrimi: valid");
+                        }
+                        else if(!File.Exists("keys\\" + sender + ".pub.xml"))
+                        {
+                            Console.WriteLine("Marresi:" + name2);
+                            Console.WriteLine("Mesazhi:" + plaintext);
+                            Console.WriteLine("Derguesi:" + sender);
+                            Console.WriteLine("Nenshkrimi: mungon celesi publik '"+ sender + "'");
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("Ka ndodhur nje gabim!");
+                        }
                     }
                     else
                     {
