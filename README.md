@@ -166,6 +166,26 @@ Fshirja e XML fajllave:
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
+~ Login
+
+Komanda login sherben per "kycje" te userit. Ne raste se jane te dhenat e sakta, pra perputhen me te dhenat ne databaze, atehere logini eshte kryer me sukses dhe leshohet me token. Tokeni eshte gjeneruar sipas nje skeme qe e kemi zgjedhur vete pasi qe nuk ka funksionuar sipas JWT! Tokeni nesnshkruhet me celsin privat te userit. Ne rastin kur te dhenat nuk perputhen ateher shfaqet mesazhi: "Shfrytezuesi ose fjalekalimi i gabuar!". Ekzekutimi i komandes: 
+
+![Screenshot_9](https://user-images.githubusercontent.com/58752918/83970180-8e2bf500-a8d4-11ea-8c40-127a96b95fad.png)
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+~Status
+
+Komanda status jep te dhenat rreth tokenit nese eshte valid ose jo, si dhe paraqet daten e skadimit te tokenit. Verifikimi behet me ane te celsit publik te userit. Ekzekutimi i komandes:
+
+![Screenshot_10](https://user-images.githubusercontent.com/58752918/83970698-570b1300-a8d7-11ea-8508-15826fb3530c.png)
+
+
+
+
+
+
+
 
 
 

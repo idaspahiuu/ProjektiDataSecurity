@@ -649,6 +649,7 @@ namespace _ds
                         string msg = word[3];
                         byte[] message = Convert.FromBase64String(msg);
 
+
                         DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
                         MemoryStream memoryStream = new MemoryStream(message);
                         CryptoStream cryptoStream = new CryptoStream(memoryStream,
