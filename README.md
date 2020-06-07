@@ -127,6 +127,47 @@ Faza e pare ne C#
   https://docs.microsoft.com/en-us/dotnet/framework/network-programming/how-to-request-data-using-the-webrequest-class
   https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.des.create?view=netcore-3.1
   
+----------------------------------------------------------------------------------------------------------------------------------------
+
+
+#FAZA E TRETE
+
+Faza e trete parasheh vazhdimin e fazes se dyte, zgjerimin e disa komandave dhe shtimin e dy komandave te reja. Komandat te cilat eshte dashur te krijohen jane: create-user, delete-user, login, status, wrtie-message dhe read-message.
+Kjo faze perfshin perdorimin e nenshkrimeve digjitale, te cilat i kemi punuar ne ligjerata dhe ushtrime. Komandat dhe funksionet e tyre jane te sqaruara ne vijim.
+
+~ Create-user
+Kjo komande ka per detyre krijimin e userit, ruajtjen e te dhenave ne databaze(ne kemi zgjedhur ti ruajm te dhenat ne databaze,SSMS), si dhe krijimin e RSA celesave. EKzekutimi i komandes:
+
+![Screenshot_2](https://user-images.githubusercontent.com/58752918/83969198-df38ea80-a8ce-11ea-906e-6ca9cda6ad30.png)
+
+Te dhenat ne databaze:
+
+![Screenshot_4](https://user-images.githubusercontent.com/58752918/83969256-422a8180-a8cf-11ea-8c4d-f4761e6c7f8e.png)
+
+XML fajllat:
+
+![Screenshot_5](https://user-images.githubusercontent.com/58752918/83969320-a51c1880-a8cf-11ea-9527-3c823f29a38a.png)
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+~ Delete-user 
+
+Kjo komande ka per detyre fshirjen e te dhenave te userit, pra te dhenat ne databaze dhe fajllat e krijuar. Ekzekutimi i komandes:
+
+![Screenshot_6](https://user-images.githubusercontent.com/58752918/83969386-09d77300-a8d0-11ea-811d-2a810b282f56.png)
+
+Fshirja e te dhenave nga databaza:
+
+![Screenshot_7](https://user-images.githubusercontent.com/58752918/83969388-0cd26380-a8d0-11ea-8414-4fde6fc87c51.png)
+
+Fshirja e XML fajllave: 
+
+![Screenshot_8](https://user-images.githubusercontent.com/58752918/83969393-0f34bd80-a8d0-11ea-842b-6678eecb48e9.png)
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 
   
 
