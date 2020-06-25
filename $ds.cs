@@ -310,22 +310,16 @@ namespace _ds
 
                 if (Verified)
                 {
-                    if (saveUtcNow.TimeOfDay > time.TimeOfDay)
-                    {
-                        Console.WriteLine("Tokeni ka skaduar!");
-                    }
-                    else {
-                        Console.WriteLine("User: " + name2 + "\nValid: po" + "\nData e skadimit: " + time);
-                    }
+                                    
+                     Console.WriteLine("User: " + name2 + "\nValid: po" + "\nData e skadimit: " + time);
+                    
 
                 }
                 else
+
                     Console.WriteLine("Tokeni nuk eshte valid!");
 
-
-
-
-            }
+                }
             else if (args[0].Equals("delete-user"))
             {
                 //komanda delete-user
@@ -610,7 +604,7 @@ namespace _ds
 
                             string token1 = token + "." + Convert.ToBase64String(byteSignedText);
                             string ciphertext = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(name)) + "." + Convert.ToBase64String(DES.IV) + "."
-                            + Convert.ToBase64String(RSA.Encrypt(DES.Key, path1)) + "." + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(sender)) + "." + Convert.ToBase64String(objRSA.SignData(Objmst.ToArray(), new SHA1CryptoServiceProvider()));
+                            + Convert.ToBase64String(RSA.Encrypt(DES.Key, path1)) + "." + Convert.ToBase64String(Objmst.ToArray()) + "." + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(sender)) + "." + Convert.ToBase64String(objRSA.SignData(Objmst.ToArray(), new SHA1CryptoServiceProvider()));
 
                             Console.WriteLine("\n" + ciphertext);
                         }
@@ -655,45 +649,43 @@ namespace _ds
                         string sender = Encoding.UTF8.GetString(Convert.FromBase64String(word[4]));
                         string path1 = "keys\\" + sender + ".pub.xml";
 
+                            string strXmlParameters = "";
+                            StreamReader sr = new StreamReader(path1);
+                            strXmlParameters = sr.ReadToEnd();
+                            sr.Close();
 
-                        string strXmlParameters = "";
-                        StreamReader sr = new StreamReader(path1);
-                        strXmlParameters = sr.ReadToEnd();
-                        sr.Close();
+                            objRSA.FromXmlString(strXmlParameters);
 
-                        objRSA.FromXmlString(strXmlParameters);
 
-                       
+                            DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
+                            MemoryStream memoryStream = new MemoryStream(message);
+                            CryptoStream cryptoStream = new CryptoStream(memoryStream,
+                                cryptoProvider.CreateDecryptor(key, iv), CryptoStreamMode.Read);
+                            StreamReader reader = new StreamReader(cryptoStream);
+                            string plaintext = reader.ReadToEnd();
 
-       
+                            bool Verified = objRSA.VerifyData(message, new SHA1CryptoServiceProvider(), Convert.FromBase64String(word[5]));
+                            if (Verified)
+                            {
+                                Console.WriteLine("Marresi:" + name2);
+                                Console.WriteLine("Mesazhi:" + plaintext);
+                                Console.WriteLine("Derguesi:" + sender);
+                                Console.WriteLine("Nenshkrimi: valid");
+                            }
+                            else if (!File.Exists("keys\\" + sender + ".pub.xml"))
+                            {
+                                Console.WriteLine("Marresi:" + name2);
+                                Console.WriteLine("Mesazhi:" + plaintext);
+                                Console.WriteLine("Derguesi:" + sender);
+                                Console.WriteLine("Nenshkrimi: mungon celesi publik '" + sender + "'");
 
-                        DESCryptoServiceProvider cryptoProvider = new DESCryptoServiceProvider();
-                        MemoryStream memoryStream = new MemoryStream(message);
-                        CryptoStream cryptoStream = new CryptoStream(memoryStream,
-                            cryptoProvider.CreateDecryptor(key, iv), CryptoStreamMode.Read);
-                        StreamReader reader = new StreamReader(cryptoStream);           
-                        string plaintext = reader.ReadToEnd();
-
-                        bool Verified = objRSA.VerifyData(message, new SHA1CryptoServiceProvider(), Convert.FromBase64String(word[5]));
-                        if (Verified)
-                        {
-                            Console.WriteLine("Marresi:" + name2);
-                            Console.WriteLine("Mesazhi:" + plaintext);
-                            Console.WriteLine("Derguesi:" + sender);
-                            Console.WriteLine("Nenshkrimi: valid");
-                        }
-                        else if(!File.Exists("keys\\" + sender + ".pub.xml"))
-                        {
-                            Console.WriteLine("Marresi:" + name2);
-                            Console.WriteLine("Mesazhi:" + plaintext);
-                            Console.WriteLine("Derguesi:" + sender);
-                            Console.WriteLine("Nenshkrimi: mungon celesi publik '"+ sender + "'");
-
-                        }
-                        else
-                        {
-                            Console.WriteLine("Ka ndodhur nje gabim!");
-                        }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Ka ndodhur nje gabim!");
+                            }
+                        
+                      
                     }
                     else
                     {
