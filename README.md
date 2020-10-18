@@ -208,7 +208,7 @@ Komanda read-message ben dekriptimin e mesazhit te shkruar dhe tregon nese nensh
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 
-PEr realizimin e projektit i jemi referuar ushtrimeve deh disa burimeve online.
+Per realizimin e projektit i jemi referuar ushtrimeve dhe disa burimeve online.
 
 
 
